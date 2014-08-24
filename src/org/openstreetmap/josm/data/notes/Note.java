@@ -19,6 +19,7 @@ public class Note {
     private long id;
     private LatLon latLon;
     private Date createdAt;
+    private Date closedAt;
     private State state;
     private String noteUrl;
     private List<NoteComment> comments = new ArrayList<NoteComment>();
@@ -48,6 +49,15 @@ public class Note {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    /** @return Date that this note was closed. Null if it is still open. */
+    public Date getClosedAt() {
+        return closedAt;
+    }
+
+    public void setClosedAt(Date closedAt) {
+        this.closedAt = closedAt;
     }
 
     /** @return The open or closed state of this note */
