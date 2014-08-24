@@ -30,6 +30,73 @@ public class NoteReader {
 
     private InputSource inputSource;
     private List<Note> parsedNotes;
+    private NoteParseMode parseMode;
+    public enum NoteParseMode {API, DUMP}
+
+    private class DumpParser extends DefaultHandler {
+        private StringBuffer buffer = new StringBuffer();
+        private final SimpleDateFormat ISO8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX", Locale.ENGLISH);
+
+        private List<Note> notes = new ArrayList<Note>(100000);
+        private Note thisNote;
+
+        private Date commentCreateDate;
+        private String commentUsername;
+        private long commentUid;
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            buffer.append(ch, start, length);
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            switch (qName) {
+                case "note":
+                    notes.add(thisNote);
+                    break;
+                case "comment":
+                    User commentUser = User.createOsmUser(commentUid, commentUsername);
+                    thisNote.addComment(new NoteComment(commentCreateDate, commentUser, buffer.toString(), null));
+                    commentUid = 0;
+                    commentUsername = null;
+                    commentCreateDate = null;
+                    break;
+            }
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXException {
+            buffer.setLength(0);
+            switch(qName) {
+            case "note":
+                double lat = Double.parseDouble(attrs.getValue("lat"));
+                double lon = Double.parseDouble(attrs.getValue("lon"));
+                LatLon noteLatLon = new LatLon(lat, lon);
+                thisNote = new Note(noteLatLon);
+                thisNote.setId(Long.parseLong(attrs.getValue("id")));
+
+                try {
+                    thisNote.setCreatedAt(ISO8601_FORMAT.parse(attrs.getValue("created_at")));
+                } catch (ParseException e) {
+                    System.err.println("Could not parse note date from notes dump: \"" + buffer.toString() + "\":");
+                    e.printStackTrace();
+                }
+                break;
+            case "comment":
+                commentUid = Long.parseLong(attrs.getValue("uid"));
+                commentUsername = attrs.getValue("user");
+                try {
+                    commentCreateDate = ISO8601_FORMAT.parse(attrs.getValue("timestamp"));
+                } catch (ParseException e) {
+                    System.err.println("Could not parse comment date from notes dump: \"" + buffer.toString() + "\":");
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+
+    }
 
     private class ApiParser extends DefaultHandler {
 
@@ -129,10 +196,12 @@ public class NoteReader {
     /**
      * Initializes the reader with a given InputStream
      * @param source - InputStream containing Notes XML
+     * @param parseMode - Indicate if we are parsing API or dump file style XML
      * @throws IOException
      */
-    public NoteReader(InputStream source) throws IOException {
+    public NoteReader(InputStream source, NoteParseMode parseMode) throws IOException {
         this.inputSource = new InputSource(source);
+        this.parseMode = parseMode;
     }
 
     /**
@@ -143,7 +212,12 @@ public class NoteReader {
      * @throws IOException
      */
     public List<Note> parse() throws SAXException, IOException {
-        ApiParser parser = new ApiParser();
+        DefaultHandler parser;
+        if(parseMode == NoteParseMode.DUMP) {
+            parser = new DumpParser();
+        } else {
+            parser = new ApiParser();
+        }
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
