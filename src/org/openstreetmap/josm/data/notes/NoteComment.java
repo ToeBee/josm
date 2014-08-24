@@ -15,12 +15,16 @@ public class NoteComment {
     private String htmlText;
     private User user;
     private Date commentTimestamp;
+    private Action action;
 
-    public NoteComment(Date createDate, User user, String comment, String htmlText) {
+    public enum Action {opened, closed, reopened, commented}
+
+    public NoteComment(Date createDate, User user, String comment, String htmlText, Action action) {
         this.text = comment;
         this.htmlText = htmlText;
         this.user = user;
         this.commentTimestamp = createDate;
+        this.action = action;
     }
 
     /** @return Plain text of user's comment */
@@ -41,5 +45,10 @@ public class NoteComment {
     /** @return The time at which this comment was created */
     public Date getCommentTimestamp() {
         return commentTimestamp;
+    }
+
+    /** @return the action associated with this note */
+    public Action getNoteAction() {
+        return action;
     }
 }
