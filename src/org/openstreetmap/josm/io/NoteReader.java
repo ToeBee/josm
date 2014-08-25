@@ -69,7 +69,7 @@ public class NoteReader {
                     break;
                 case "comment":
                     User commentUser = User.createOsmUser(commentUid, commentUsername);
-                    thisNote.addComment(new NoteComment(commentCreateDate, commentUser, buffer.toString(), null, noteAction));
+                    thisNote.addComment(new NoteComment(commentCreateDate, commentUser, buffer.toString(), noteAction));
                     commentUid = 0;
                     commentUsername = null;
                     commentCreateDate = null;
@@ -133,7 +133,6 @@ public class NoteReader {
         private String commentUsername;
         private long commentUid;
         private String commentText;
-        private String commentHtmlText;
         private Action commentAction;
 
         @Override
@@ -182,12 +181,9 @@ public class NoteReader {
             case "text":
                 commentText = accumulator.toString();
                 break;
-            case "html":
-                commentHtmlText = accumulator.toString();
-                break;
             case "comment":
                 User commentUser = User.createOsmUser(commentUid, commentUsername);
-                thisNote.addComment(new NoteComment(commentCreateDate, commentUser, commentText, commentHtmlText, commentAction));
+                thisNote.addComment(new NoteComment(commentCreateDate, commentUser, commentText, commentAction));
                 commentUid = 0;
                 commentUsername = null;
                 commentCreateDate = null;

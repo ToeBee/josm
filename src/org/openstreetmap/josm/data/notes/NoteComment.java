@@ -12,16 +12,14 @@ import org.openstreetmap.josm.data.osm.User;
 public class NoteComment {
 
     private String text;
-    private String htmlText;
     private User user;
     private Date commentTimestamp;
     private Action action;
 
     public enum Action {opened, closed, reopened, commented}
 
-    public NoteComment(Date createDate, User user, String comment, String htmlText, Action action) {
+    public NoteComment(Date createDate, User user, String comment, Action action) {
         this.text = comment;
-        this.htmlText = htmlText;
         this.user = user;
         this.commentTimestamp = createDate;
         this.action = action;
@@ -30,11 +28,6 @@ public class NoteComment {
     /** @return Plain text of user's comment */
     public String getText() {
         return text;
-    }
-
-    /** @return HTML formatted comment text */
-    public String getHtmlText() {
-        return htmlText;
     }
 
     /** @return JOSM's User object for the user who made this comment */
