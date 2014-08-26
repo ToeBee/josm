@@ -153,9 +153,6 @@ public class NoteReader {
             case "status":
                 thisNote.setState(Note.State.valueOf(accumulator.toString()));
                 break;
-            case "url":
-                thisNote.setNoteUrl(accumulator.toString());
-                break;
             case "date_created":
                 thisNote.setCreatedAt(parseDate(NOTE_DATE_FORMAT, accumulator.toString()));
                 break;

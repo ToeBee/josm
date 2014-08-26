@@ -20,7 +20,6 @@ public class Note {
     private Date createdAt;
     private Date closedAt;
     private State state;
-    private String noteUrl;
     private List<NoteComment> comments = new ArrayList<NoteComment>();
 
     /**
@@ -77,14 +76,6 @@ public class Note {
         return comments;
     }
 
-    public String getNoteUrl() {
-    	return noteUrl;
-    }
-
-    public void setNoteUrl(String url) {
-    	this.noteUrl = url;
-    }
-
     public void addComment(NoteComment comment) {
         this.comments.add(comment);
     }
@@ -108,7 +99,6 @@ public class Note {
         this.id = note.id;
         this.state = note.state;
         this.latLon = note.latLon;
-        this.noteUrl = note.noteUrl;
     }
 
 }
