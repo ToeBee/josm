@@ -99,7 +99,12 @@ public class NoteReader {
                 thisNote.setCreatedAt(parseDate(ISO8601_FORMAT, attrs.getValue("created_at")));
                 break;
             case "comment":
-                commentUid = Long.parseLong(attrs.getValue("uid"));
+                String uidStr = attrs.getValue("uid");
+                if(uidStr == null) {
+                    commentUid = 0;
+                } else {
+                    commentUid = Long.parseLong(uidStr);
+                }
                 commentUsername = attrs.getValue("user");
                 noteAction = Action.valueOf(attrs.getValue("action"));
                 commentCreateDate = parseDate(ISO8601_FORMAT, attrs.getValue("timestamp"));
@@ -111,6 +116,12 @@ public class NoteReader {
                 }
                 break;
             }
+        }
+
+        @Override
+        public void endDocument() throws SAXException  {
+            Main.info("parsed notes: " + notes.size());
+            parsedNotes = notes;
         }
     }
 
