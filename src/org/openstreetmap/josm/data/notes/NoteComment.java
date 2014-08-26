@@ -16,13 +16,28 @@ public class NoteComment {
     private Date commentTimestamp;
     private Action action;
 
+    //not currently used. I'm planning on using this to keep track of new actions that need to be uploaded
+    private Boolean isNew;
+
+    /**
+     * Every comment has an associated action. Some comments are just comments
+     * while others indicate the note being opened, closed or reopened
+     */
     public enum Action {opened, closed, reopened, commented}
 
-    public NoteComment(Date createDate, User user, String comment, Action action) {
-        this.text = comment;
+    /**
+     * @param createDate The time at which this comment was added
+     * @param user JOSM User object of the user who created the comment
+     * @param commentText The text left by the user. Is sometimes blank
+     * @param action The action associated with this comment
+     * @param isNew Whether or not this comment is new and needs to be uploaded
+     */
+    public NoteComment(Date createDate, User user, String commentText, Action action, Boolean isNew) {
+        this.text = commentText;
         this.user = user;
         this.commentTimestamp = createDate;
         this.action = action;
+        this.isNew = isNew;
     }
 
     /** @return Plain text of user's comment */
@@ -43,5 +58,14 @@ public class NoteComment {
     /** @return the action associated with this note */
     public Action getNoteAction() {
         return action;
+    }
+
+    public void setIsNew(Boolean isNew) {
+        this.isNew = isNew;
+    }
+
+    /** @return true if this is a new comment/action and needs to be uploaded to the API */
+    public Boolean getIsNew() {
+        return isNew;
     }
 }

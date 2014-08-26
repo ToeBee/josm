@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.coor.LatLon;
 
 /**
@@ -24,6 +23,10 @@ public class Note {
     private String noteUrl;
     private List<NoteComment> comments = new ArrayList<NoteComment>();
 
+    /**
+     * Create a note with a given location
+     * @param latLon Geographic location of this note
+     */
     public Note(LatLon latLon) {
         this.latLon = latLon;
     }
@@ -79,7 +82,6 @@ public class Note {
     }
 
     public void setNoteUrl(String url) {
-        Main.debug("note URL: " + url);
     	this.noteUrl = url;
     }
 
@@ -98,7 +100,7 @@ public class Note {
     /**
      * Copies values from a new note into an existing one. Used after a note
      * has been updated on the server and the local copy needs refreshing.
-     * @param note
+     * @param note New values to copy
      */
     public void updateWith(Note note) {
         this.comments = note.comments;
